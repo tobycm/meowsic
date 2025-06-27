@@ -1,4 +1,4 @@
-import { BunFile, Glob } from "bun";
+import { Glob } from "bun";
 import { Database } from "bun:sqlite";
 import { freemem } from "os";
 
@@ -44,16 +44,16 @@ export async function startup() {
 
     if (selectLastModified.get(fileName)?.last_modified === file.lastModified) continue;
 
-    async function processFile(file: BunFile) {
-      console.log(`Processing file: ${file.name}`);
+    async function processFile(fileName: string) {
+      console.log(`Processing file: ${fileName}`);
 
       const tags = read(file.name!);
 
       if (!tags.artist || !tags.title) {
         // If the tags are missing, try to parse them from the file name
-        const parsedInfo = parseInfoFromName(file.name!);
+        const parsedInfo = parseInfoFromName(fileName);
         tags.artist = parsedInfo.artist || "Unknown Artist";
-        tags.title = parsedInfo.title || file.name!.replace(/\.mp3$/, "") || "Unknown Title";
+        tags.title = parsedInfo.title || fileName.replace(/\.mp3$/, "") || "Unknown Title";
       }
 
       let image: Buffer | undefined = undefined;
@@ -62,19 +62,11 @@ export async function startup() {
 
       const duration = await getDuration(`${musicFolder}/${file.name}`);
 
-      insertFile.run(
-        file.name!,
-        file.lastModified,
-        new Date().toISOString(),
-        tags.title || null,
-        tags.artist || null,
-        image || null,
-        duration || null
-      );
+      insertFile.run(fileName, file.lastModified, new Date().toISOString(), tags.title || null, tags.artist || null, image || null, duration || null);
     }
 
-    if (lowMem) await processFile(file);
-    else jobs.push(processFile(file)); // Process the file asynchronously
+    if (lowMem) await processFile(fileName);
+    else jobs.push(processFile(fileName)); // Process the file asynchronously
   }
 
   await Promise.all(jobs);
