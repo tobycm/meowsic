@@ -1,5 +1,6 @@
-import { Glob } from "bun";
+import { BunFile, Glob } from "bun";
 import { Database } from "bun:sqlite";
+import { freemem } from "os";
 
 import { read } from "node-id3";
 import { Song } from "./models";
@@ -32,6 +33,8 @@ export async function startup() {
     `INSERT OR REPLACE INTO files (name, last_modified, added_at, title, artist, album_art, duration) VALUES (?, ?, ?, ?, ?, ?, ?)`
   );
 
+  const lowMem = freemem() < 0.9 * 1024 * 1024 * 1024;
+
   const jobs: Promise<void>[] = [];
 
   for (const fileName of glob.scanSync(musicFolder)) {
@@ -41,27 +44,38 @@ export async function startup() {
 
     if (selectLastModified.get(fileName)?.last_modified === file.lastModified) continue;
 
-    async function processFile(fileName: string) {
-      console.log(`Processing file: ${fileName}`);
+    async function processFile(file: BunFile) {
+      console.log(`Processing file: ${file.name}`);
 
       const tags = read(file.name!);
 
       if (!tags.artist || !tags.title) {
         // If the tags are missing, try to parse them from the file name
-        const parsedInfo = parseInfoFromName(fileName);
+        const parsedInfo = parseInfoFromName(file.name!);
         tags.artist = parsedInfo.artist || "Unknown Artist";
-        tags.title = parsedInfo.title || fileName.replace(/\.mp3$/, "") || "Unknown Title";
+        tags.title = parsedInfo.title || file.name!.replace(/\.mp3$/, "") || "Unknown Title";
       }
 
       let image: Buffer | undefined = undefined;
 
       if (tags.image && typeof tags.image !== "string") image = tags.image.imageBuffer;
 
-      const duration = await getDuration(`${musicFolder}/${fileName}`);
+      const duration = await getDuration(`${musicFolder}/${file.name}`);
 
-      insertFile.run(fileName, file.lastModified, new Date().toISOString(), tags.title || null, tags.artist || null, image || null, duration || null);
+      insertFile.run(
+        file.name!,
+        file.lastModified,
+        new Date().toISOString(),
+        tags.title || null,
+        tags.artist || null,
+        image || null,
+        duration || null
+      );
     }
 
-    jobs.push(processFile(fileName));
+    if (lowMem) await processFile(file);
+    else jobs.push(processFile(file)); // Process the file asynchronously
   }
+
+  await Promise.all(jobs);
 }
