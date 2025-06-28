@@ -1,31 +1,20 @@
-// src/theme.js
-import { createTheme } from "@mui/material/styles";
+import { colorsTuple, createTheme } from "@mantine/core";
 
 const theme = createTheme({
-  palette: {
-    primary: {
-      main: "#ffafcc",
-    },
-    secondary: {
-      main: "#cdb4db",
-    },
-    error: {
-      main: "#ff006e",
-    },
-    warning: {
-      main: "#ffbe0b",
-    },
-    info: {
-      main: "#ffc8dd",
-    },
-    success: {
-      main: "#3a86ff",
-    },
-    background: {
-      default: "#571089", // Light blue background
+  primaryColor: "primary",
 
-      paper: "#efd9ce",
-    },
+  fontFamily: "Roboto, sans-serif",
+  headings: { fontFamily: "Roboto, sans-serif" },
+
+  colors: {
+    primary: colorsTuple("#ffafcc"),
+    secondary: colorsTuple("#cdb4db"),
+    error: colorsTuple("#ff006e"),
+    warn: colorsTuple("#ffbe0b"),
+    info: colorsTuple("#ffc8dd"),
+    success: colorsTuple("#3a86ff"),
+    purp: colorsTuple("#571089"),
+    paper: colorsTuple("#efd9ce"),
   },
 });
 

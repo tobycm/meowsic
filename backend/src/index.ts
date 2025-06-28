@@ -1,3 +1,4 @@
+import cors from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import Database from "bun:sqlite";
 import { Elysia, t } from "elysia";
@@ -14,6 +15,11 @@ const db = new Database(databasePath);
 
 const app = new Elysia({ prefix: "/api" })
   .use(
+    cors({
+      origin: process.env.CORS_ORIGIN || "*", // Allow all origins by default, can be overridden by environment variable
+    })
+  )
+  .use(
     swagger({
       documentation: {
         info: {
@@ -24,7 +30,6 @@ const app = new Elysia({ prefix: "/api" })
       },
     })
   )
-
   .get("/", () => "Hello Elysia and meowsic!")
   .get("/favicon.ico", () => Bun.file("./assets/favicon.ico"))
   .get(
@@ -187,7 +192,6 @@ const app = new Elysia({ prefix: "/api" })
       }),
     }
   )
-
   .listen(3457);
 
 console.log(`🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`);
