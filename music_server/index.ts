@@ -10,22 +10,28 @@ Bun.serve({
 
     const path = decodeURIComponent(url.pathname.replace("/music/", ""));
 
+    const file = Bun.file(join(musicFolder, path));
+
     if (request.method === "OPTIONS") {
       return new Response("Departed", {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET, OPTIONS",
+          "Accept-Ranges": "bytes",
+          "Content-Type": file.type,
         },
       });
     }
 
-    const response = new Response(Bun.file(join(musicFolder, path)));
-
-    response.headers.set("Access-Control-Allow-Origin", "*");
-    response.headers.set("Access-Control-Allow-Methods", "GET, OPTIONS");
-    response.headers.set("Content-Type", "audio/mpeg");
-
-    return response;
+    return new Response(file, {
+      headers: {
+        Connection: "keep-alive",
+        "Content-Range": `bytes 0-${file.size - 1}/${file.size}`,
+        "Content-Length": file.size.toString(),
+        "Content-Type": file.type,
+      },
+      status: 206,
+    });
   },
   development: false,
   port: process.env.PORT ? parseInt(process.env.PORT) : 3458,

@@ -1,63 +1,94 @@
 import { ActionIcon, Group, Slider, Stack, Text, useMantineTheme } from "@mantine/core";
 import { IconPlayerPause, IconPlayerPlay, IconVolume, IconVolumeOff } from "@tabler/icons-react";
-import { useAudioContext } from "../../contexts/AudioContext";
+import { useShallow } from "zustand/shallow";
 import { humanTime } from "../../lib/utils";
+import { useNowPlaying } from "../../states/NowPlaying";
 
 export default function AudioControls() {
   const theme = useMantineTheme();
 
-  const {
-    state: { playing, currentTime, duration, volume, muted },
-    play,
-    pause,
-    seek,
-    setVolume,
-    toggleMuted,
-  } = useAudioContext();
+  const { play, pause } = useNowPlaying(
+    useShallow((state) => ({
+      play: state.play,
+      pause: state.pause,
+      setVolume: state.setVolume,
+      toggleMuted: state.toggleMuted,
+    }))
+  );
+
+  const playing = useNowPlaying((state) => state.playing);
 
   return (
-    <Stack pos="relative" align="center" bdrs={8} mx="xl" px="sm" py="lg" style={{ boxShadow: theme.shadows.sm }} flex={1}>
-      <Group gap="md" mx="md" flex={1} w="100%">
-        <Slider
-          flex={5}
-          value={currentTime}
-          max={duration || 1} // Ensure max is at least 1 to prevent errors on load
-          onChange={(value) => seek(value)}
-          label={null}
-          styles={{ thumb: { transition: "opacity 150ms ease" } }}
-        />
+    <Stack align="center" bdrs={8} mx="xl" px="sm" py="lg" style={{ boxShadow: theme.shadows.sm }} flex={1}>
+      <ProgressBar />
 
-        <Text fz="sm" ta="center">
-          {humanTime(new Date((currentTime || 0) * 1000))} / {humanTime(new Date((duration || 0) * 1000))}
-        </Text>
-
-        <ActionIcon onClick={toggleMuted} variant="subtle">
-          {muted ? <IconVolumeOff size="1.2rem" /> : <IconVolume size="1.2rem" />}
-        </ActionIcon>
-        <Slider
-          value={volume}
-          onChange={(value) => {
-            setVolume(value);
+      <Group gap="md" mx="md" flex={1} w="100%" align="center" justify="center">
+        <VolumeControl />
+        <ActionIcon
+          onClick={() => {
+            if (playing) pause();
+            else play();
           }}
-          max={1}
-          step={0.01}
-          label={null}
-          flex={1}
-        />
+          size="xl"
+          radius="xl"
+          variant="filled"
+          color="blue"
+          style={{ flex: 0 }}>
+          {playing ? <IconPlayerPause size="1.5rem" /> : <IconPlayerPlay size="1.5rem" />}
+        </ActionIcon>
       </Group>
-
-      <ActionIcon
-        onClick={() => {
-          if (playing) pause();
-          else play();
-        }}
-        size="xl"
-        radius="xl"
-        variant="filled"
-        color="blue"
-        style={{ flexShrink: 0 }}>
-        {playing ? <IconPlayerPause size="1.5rem" /> : <IconPlayerPlay size="1.5rem" />}
-      </ActionIcon>
     </Stack>
+  );
+}
+
+function ProgressBar() {
+  const currentTime = useNowPlaying((state) => state.currentTime);
+  const duration = useNowPlaying((state) => state.duration);
+  const seek = useNowPlaying(useShallow((state) => state.seek));
+
+  return (
+    <Stack gap="md" mx="md" flex={5} w="100%" align="center">
+      <Slider
+        w="90%"
+        value={currentTime}
+        max={duration || 1} // Ensure max is at least 1 to prevent errors on load
+        step={0.2}
+        onChange={(value) => {
+          console.log(currentTime);
+          seek(value);
+        }}
+        label={null}
+        styles={{ thumb: { transition: "opacity 150ms ease" } }}
+      />
+
+      <Text fz="sm" ta="center">
+        {humanTime(new Date((currentTime || 0) * 1000))} / {humanTime(new Date((duration || 0) * 1000))}
+      </Text>
+    </Stack>
+  );
+}
+
+function VolumeControl() {
+  const volume = useNowPlaying((state) => state.volume);
+  const muted = useNowPlaying((state) => state.muted);
+  const setVolume = useNowPlaying((state) => state.setVolume);
+  const toggleMuted = useNowPlaying((state) => state.toggleMuted);
+
+  return (
+    <Group gap="md" mx="md" w={200}>
+      <ActionIcon onClick={() => toggleMuted()} variant="subtle">
+        {muted ? <IconVolumeOff size="1.2rem" /> : <IconVolume size="1.2rem" />}
+      </ActionIcon>
+      <Slider
+        value={volume}
+        onChange={(value) => {
+          setVolume(value);
+        }}
+        flex={1}
+        max={1}
+        step={0.01}
+        label={null}
+      />
+    </Group>
   );
 }

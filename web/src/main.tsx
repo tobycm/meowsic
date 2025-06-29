@@ -1,3 +1,5 @@
+import { scan } from "react-scan"; // must be imported before React and React DOM
+
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -17,8 +19,12 @@ import { api } from "./lib/api";
 import theme from "./theme.ts";
 
 import { MantineProvider } from "@mantine/core";
-import AudioProvider from "./contexts/AudioContext.tsx";
+import Player from "./components/Player.tsx";
 import "./index.css";
+
+scan({
+  enabled: true,
+});
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,9 +42,8 @@ createRoot(document.getElementById("root")!).render(
         <ReactQueryDevtools initialIsOpen={false} />
 
         <AppProvider api={api}>
-          <AudioProvider>
-            <App />
-          </AudioProvider>
+          <Player />
+          <App />
         </AppProvider>
       </QueryClientProvider>
     </MantineProvider>
