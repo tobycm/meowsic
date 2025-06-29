@@ -14,6 +14,4 @@ export class Song {
 export const TImageTransform = t.Object({
   width: t.Optional(t.Number()),
   height: t.Optional(t.Number()),
-
-  quality: t.Optional(t.Number({ default: 75 })),
 });

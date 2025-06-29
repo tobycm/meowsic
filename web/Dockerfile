@@ -14,8 +14,6 @@ RUN bun run build
 # Use a lightweight server to serve the built application
 FROM nginx:alpine
 
-COPY --from=builder /app/dist /web/
-
-COPY meowsic.nginx /etc/nginx/conf.d/default.conf
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 80

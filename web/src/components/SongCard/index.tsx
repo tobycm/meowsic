@@ -1,8 +1,8 @@
 import { Flex, Image, Text } from "@mantine/core";
 
-import { useAppContext } from "../../contexts/AppContext";
 import { Song } from "../../lib/api";
 
+import { useAudioContext } from "../../contexts/AudioContext";
 import { humanTime } from "../../lib/utils";
 import classes from "./index.module.css";
 
@@ -15,11 +15,11 @@ export default function SongCard({
   flexProps?: React.ComponentProps<typeof Flex>;
   onClick?: (event: React.MouseEvent<HTMLDivElement>) => void;
 }) {
-  const { nowPlaying } = useAppContext();
+  const { song: npSong } = useAudioContext();
 
   const duration = new Date(song.duration * 1000);
 
-  const selected = nowPlaying?.song.id === song.id;
+  const selected = npSong?.id === song.id;
 
   return (
     <Flex className={`${classes.card} ${selected ? classes.selected : ""}`} onClick={onClick} {...flexProps}>

@@ -13,10 +13,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import App from "./App.tsx";
 import AppProvider from "./contexts/AppContext.tsx";
-import { api } from "./lib/api/index.ts";
+import { api } from "./lib/api";
 import theme from "./theme.ts";
 
 import { MantineProvider } from "@mantine/core";
+import AudioProvider from "./contexts/AudioContext.tsx";
 import "./index.css";
 
 const queryClient = new QueryClient({
@@ -35,7 +36,9 @@ createRoot(document.getElementById("root")!).render(
         <ReactQueryDevtools initialIsOpen={false} />
 
         <AppProvider api={api}>
-          <App />
+          <AudioProvider>
+            <App />
+          </AudioProvider>
         </AppProvider>
       </QueryClientProvider>
     </MantineProvider>

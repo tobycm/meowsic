@@ -1,34 +1,14 @@
-import { createContext, useContext, useState } from "react";
-import type { MeowsicAPI, Song } from "../lib/api";
+import { createContext, useContext } from "react";
+import type { MeowsicAPI } from "../lib/api";
 
 export interface AppContextInterface {
   api: MeowsicAPI;
-
-  nowPlaying?: {
-    song: Song;
-
-    progress: number; // Progress in seconds
-    isPlaying: boolean;
-  };
-
-  setNowPlaying: (nowPlaying: AppContextInterface["nowPlaying"]) => void;
 }
 
 const AppContext = createContext<AppContextInterface | undefined>(undefined);
 
 export default function AppProvider({ children, api }: { children: React.ReactNode; api: MeowsicAPI }) {
-  const [nowPlaying, setNowPlaying] = useState<AppContextInterface["nowPlaying"]>(undefined);
-
-  return (
-    <AppContext.Provider
-      value={{
-        api,
-        nowPlaying,
-        setNowPlaying,
-      }}>
-      {children}
-    </AppContext.Provider>
-  );
+  return <AppContext.Provider value={{ api }}>{children}</AppContext.Provider>;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

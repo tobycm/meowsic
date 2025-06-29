@@ -13,17 +13,21 @@
     "@fontsource/roboto": "^5.2.6",
     "@mantine/core": "^8.1.2",
     "@mantine/hooks": "^8.1.2",
+    "@tabler/icons-react": "^3.34.0",
     "@tanstack/react-query": "^5.81.5",
     "postcss": "^8.5.6",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-player": "^3.0.0",
+    "use-sound": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
     "@tanstack/react-query-devtools": "^5.81.5",
     "@types/bun": "^1.2.17",
+    "@types/howler": "^2.2.12",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react-swc": "^3.10.2",

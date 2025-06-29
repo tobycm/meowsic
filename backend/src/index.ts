@@ -13,7 +13,7 @@ await startup();
 // db should be ready
 const db = new Database(databasePath);
 
-const app = new Elysia({ prefix: "/api" })
+const app = new Elysia()
   .use(
     cors({
       origin: process.env.CORS_ORIGIN || "*", // Allow all origins by default, can be overridden by environment variable
@@ -192,6 +192,39 @@ const app = new Elysia({ prefix: "/api" })
       }),
     }
   )
+  .get(
+    "/songs/:id/album-art",
+    async ({ params, query }) => {
+      const { id } = params;
+      const { width, height } = query;
+      const song = db.query("SELECT album_art FROM files WHERE id = ?").as(Song).get(id);
+      if (!song || !song.album_art) return new Response("Album art not found", { status: 404 });
+
+      let image = sharp(Buffer.from(song.album_art), { failOnError: false });
+      if (width || height) {
+        image = image.resize({
+          width: width ? parseInt(width.toString(), 10) : undefined,
+          height: height ? parseInt(height.toString(), 10) : undefined,
+          fit: "inside",
+        });
+      }
+      const buffer = await image.toBuffer();
+      return new Response(buffer, {
+        headers: {
+          "Content-Type": "image/png",
+          "Cache-Control": "public, max-age=3600", // Cache for 1 hour
+        },
+      });
+    },
+    {
+      params: t.Object({
+        id: t.Number(),
+      }),
+
+      query: TImageTransform,
+    }
+  )
+
   .listen(3457);
 
 console.log(`🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`);

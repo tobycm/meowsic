@@ -7,7 +7,8 @@ export function humanTime(date: Date): string {
 
   if (hours > 0) result += `${hours}:`;
 
-  if (hours > 0 || minutes > 0) result += `${minutes.toString().padStart(2, "0")}:`;
+  if (hours > 0) result += `${minutes.toString().padStart(2, "0")}:`;
+  else result += `${minutes}:`;
 
   result += seconds.toString().padStart(2, "0");
 

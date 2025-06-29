@@ -60,7 +60,7 @@ export async function startup() {
 
       if (tags.image && typeof tags.image !== "string") image = tags.image.imageBuffer;
 
-      const duration = await getDuration(`${musicFolder}/${file.name}`);
+      const duration = await getDuration(file.name!);
 
       insertFile.run(fileName, file.lastModified, new Date().toISOString(), tags.title || null, tags.artist || null, image || null, duration || null);
     }
