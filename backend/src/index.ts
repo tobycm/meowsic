@@ -13,12 +13,10 @@ await startup();
 // db should be ready
 const db = new Database(databasePath);
 
+const corsOrigin = process.env.CORS_ORIGIN || "*"; // Default to allow all origins
+
 const app = new Elysia()
-  .use(
-    cors({
-      origin: process.env.CORS_ORIGIN || "*", // Allow all origins by default, can be overridden by environment variable
-    })
-  )
+  .use(cors({ origin: corsOrigin }))
   .use(
     swagger({
       documentation: {
