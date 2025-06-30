@@ -70,4 +70,13 @@ export async function startup() {
   }
 
   await Promise.all(jobs);
+
+  const deleteFile = db.query("DELETE FROM files WHERE id = ?");
+
+  for (const file of db.query("SELECT id, name FROM files").as(Song)) {
+    if (await Bun.file(`${musicFolder}/${file.name}`).exists()) return;
+
+    console.log(`File not found: ${`${musicFolder}/${file.name}`}, deleting from database.`);
+    deleteFile.run(file.id!);
+  }
 }
