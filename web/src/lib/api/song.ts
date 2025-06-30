@@ -24,7 +24,7 @@ export class Song {
   title: string;
   artist: string;
   #albumArt: string | undefined;
-  #albumArtOptions: AlbumArtOptions | undefined;
+  albumArtOptions: AlbumArtOptions | undefined;
   duration: number;
 
   constructor(options: SongOptions) {
@@ -33,7 +33,7 @@ export class Song {
     this.title = options.title || "";
     this.artist = options.artist || "";
     this.#albumArt = options.albumArt;
-    this.#albumArtOptions = options.albumArtOptions;
+    this.albumArtOptions = options.albumArtOptions;
     this.duration = options.duration;
   }
 
@@ -48,7 +48,7 @@ export class Song {
   get albumArt(): string | undefined {
     if (this.#albumArt) return this.#albumArt;
 
-    const { width, height } = this.#albumArtOptions || {};
+    const { width, height } = this.albumArtOptions || {};
 
     const url = new URL(apiUrl + `/songs/${this.id}/album-art`);
     if (width) url.searchParams.set("width", width.toString());

@@ -41,9 +41,10 @@ export default function SongsList() {
   return (
     <ScrollArea h="60vh" w={isMobile ? "100%" : "42vw"} bdrs="xl" style={{ boxShadow: theme.shadows.lg, backdropFilter: "blur(24px)" }}>
       <Stack gap="md" p="md">
-        {songs.data?.map((song) => (
-          <SongCard song={song} key={song.id} selected={nowPlayingId === song.id} playing={nowPlayingId === song.id ? playing : false} />
-        ))}
+        {songs.data?.map((song) => {
+          song.albumArtOptions = { width: 64, height: 64 }; // Set album art options for the song
+          return <SongCard song={song} key={song.id} selected={nowPlayingId === song.id} playing={nowPlayingId === song.id ? playing : false} />;
+        })}
       </Stack>
     </ScrollArea>
   );
