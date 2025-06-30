@@ -9,7 +9,7 @@ export default function NowPlaying() {
   return (
     <Stack gap="md" p="md">
       <Skeleton h="calc(45vw/16*9)" w="45vw" bdrs="xl" visible={false}>
-        {song && <Image src={song.albumArt} alt={`${song.title} by ${song.artist}`} bdrs="xl" h="auto" w="45vw" style={{ aspectRatio: 16 / 9 }} />}
+        {song && <Image src={song.albumArt()} alt={`${song.title} by ${song.artist}`} bdrs="xl" h="auto" w="45vw" style={{ aspectRatio: 16 / 9 }} />}
       </Skeleton>
       <AudioControls />
     </Stack>

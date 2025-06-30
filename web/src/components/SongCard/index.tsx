@@ -1,10 +1,10 @@
-import { Flex, Image, Stack, Text } from "@mantine/core";
-
-import { Song } from "../../lib/api";
+import { Flex, Image, Skeleton, Stack, Text, useMantineTheme } from "@mantine/core";
 
 import { IconDisc, IconPlayerPlay } from "@tabler/icons-react";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useShallow } from "zustand/shallow";
+
+import { Song } from "../../lib/api";
 import { humanTime } from "../../lib/utils";
 import { useNowPlaying } from "../../states/NowPlaying";
 
@@ -12,11 +12,15 @@ import { useHover } from "@mantine/hooks";
 import classes from "./index.module.css";
 
 function SongCard({ song, selected, playing }: { song: Song; selected?: boolean; playing?: boolean }) {
+  const theme = useMantineTheme();
+
   const hover = useHover();
 
   const load = useNowPlaying(useShallow((state) => state.load));
 
   const duration = new Date(song.duration * 1000);
+
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   return (
     <Flex
@@ -29,17 +33,20 @@ function SongCard({ song, selected, playing }: { song: Song; selected?: boolean;
         if (selected) return;
         load(song, true);
       }}
-      style={{ cursor: "pointer" }}>
-      <Image
-        src={song.albumArt}
-        alt={`${song.name} by ${song.artist}`}
-        radius="md"
-        bdrs="md"
-        h="100%"
-        w="auto"
-        style={{ aspectRatio: 1 }}
-        loading="lazy"
-      />
+      style={{ cursor: "pointer", transition: "background-color 0.2s ease-in-out", boxShadow: theme.shadows.sm }}>
+      <Skeleton visible={!imageLoaded} h={80} w={80} bdrs="md" miw={80} mih={80} animate>
+        <Image
+          src={song.albumArt({ height: 80 })}
+          alt={`${song.name} by ${song.artist}`}
+          radius="md"
+          bdrs="md"
+          h="100%"
+          w="auto"
+          style={{ aspectRatio: 1 }}
+          loading="lazy"
+          onLoad={() => setImageLoaded(true)}
+        />
+      </Skeleton>
       <Stack justify="center" ml="md" miw={0} gap={0}>
         <Text size="lg" fw="bold" lineClamp={1}>
           {song.title}

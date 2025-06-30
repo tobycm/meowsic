@@ -45,10 +45,10 @@ export class Song {
     return new URL(apiUrl + `/songs/${this.id}`).toString();
   }
 
-  get albumArt(): string | undefined {
+  albumArt(options?: AlbumArtOptions): string | undefined {
     if (this.#albumArt) return this.#albumArt;
 
-    const { width, height } = this.albumArtOptions || {};
+    const { width, height } = options || this.albumArtOptions || {};
 
     const url = new URL(apiUrl + `/songs/${this.id}/album-art`);
     if (width) url.searchParams.set("width", width.toString());

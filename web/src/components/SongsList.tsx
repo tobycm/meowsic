@@ -14,10 +14,10 @@ export default function SongsList() {
   const isMobile = useMediaQuery("(max-width: 48rem)");
 
   const songs = useQuery({
-    queryKey: ["songs", 200, ["id", "name", "title", "artist", "duration"]],
+    queryKey: ["songs", 0, ["id", "name", "title", "artist", "duration"]],
     queryFn: async () => {
       const songs = await api.songs({
-        limit: 200,
+        limit: 0, // Fetch all songs, since the backend use a loosy == check, 0 will be false :trollface:
         fields: ["id", "name", "title", "artist", "duration"],
       });
 
@@ -42,12 +42,7 @@ export default function SongsList() {
     <ScrollArea h="60vh" w={isMobile ? "100%" : "42vw"} bdrs="xl" style={{ boxShadow: theme.shadows.lg, backdropFilter: "blur(24px)" }}>
       <Stack gap="md" p="md">
         {songs.data?.map((song) => (
-          <SongCard
-            song={new Song({ ...song, albumArtOptions: { height: 80 } })}
-            key={song.id}
-            selected={nowPlayingId === song.id}
-            playing={nowPlayingId === song.id ? playing : false}
-          />
+          <SongCard song={song} key={song.id} selected={nowPlayingId === song.id} playing={nowPlayingId === song.id ? playing : false} />
         ))}
       </Stack>
     </ScrollArea>

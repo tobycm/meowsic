@@ -13,7 +13,7 @@ export default function NowPlayingBackground() {
       <Image
         h="calc(100% + 128px)"
         w="calc(100% + 128px)"
-        src={song.albumArt}
+        src={song.albumArt()}
         alt={`${song.title} by ${song.artist}`}
         bgr="no-repeat"
         bgsz="cover"

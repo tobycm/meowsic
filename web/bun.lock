@@ -24,6 +24,7 @@
         "@eslint/js": "^9.29.0",
         "@tanstack/react-query-devtools": "^5.81.5",
         "@types/bun": "^1.2.17",
+        "@types/colorthief": "^2.6.0",
         "@types/howler": "^2.2.12",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",
@@ -41,6 +42,7 @@
     },
   },
   "trustedDependencies": [
+    "esbuild",
     "@swc/core",
   ],
   "packages": {
@@ -301,6 +303,8 @@
     "@tokenizer/token": ["@tokenizer/token@0.3.0", "", {}, "sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A=="],
 
     "@types/bun": ["@types/bun@1.2.17", "", { "dependencies": { "bun-types": "1.2.17" } }, "sha512-l/BYs/JYt+cXA/0+wUhulYJB6a6p//GTPiJ7nV+QHa8iiId4HZmnu/3J/SowP5g0rTiERY2kfGKXEK5Ehltx4Q=="],
+
+    "@types/colorthief": ["@types/colorthief@2.6.0", "", {}, "sha512-GZBHPzkgEsyZqO7a9rhqkcW2BJZW+UpRlIUorY8vfOk7BVFVZMuDvZRPyaExv7ML0DaeB/t78PUOTkGo/THDpQ=="],
 
     "@types/estree": ["@types/estree@1.0.8", "", {}, "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="],
 

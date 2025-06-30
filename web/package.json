@@ -29,6 +29,7 @@
     "@eslint/js": "^9.29.0",
     "@tanstack/react-query-devtools": "^5.81.5",
     "@types/bun": "^1.2.17",
+    "@types/colorthief": "^2.6.0",
     "@types/howler": "^2.2.12",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -44,6 +45,8 @@
     "vite": "^7.0.0"
   },
   "trustedDependencies": [
-    "@swc/core"
+    "@swc/core",
+    "esbuild",
+    "sharp"
   ]
 }

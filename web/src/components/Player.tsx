@@ -26,8 +26,6 @@ export default function Player() {
   useEffect(() => {
     if (!playerRef.current) return;
 
-    console.log("Seeking to:", seekTo);
-
     playerRef.current.currentTime = seekTo;
   }, [seekTo]);
 
