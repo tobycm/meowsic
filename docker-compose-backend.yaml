@@ -1,0 +1,26 @@
+services:
+  backend:
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    container_name: meowsic-backend
+    restart: unless-stopped
+    ports:
+      - "3457:3457"
+    volumes:
+      - meowsic-data:/data
+      - ./music:/music:ro
+
+  music_server:
+    build:
+      context: ./music_server/
+      dockerfile: Dockerfile
+    container_name: meowsic-music-server
+    restart: unless-stopped
+    ports:
+      - "3458:3458"
+    volumes:
+      - ./music:/music:ro
+
+volumes:
+  meowsic-data:

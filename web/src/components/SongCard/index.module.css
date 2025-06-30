@@ -1,24 +1,3 @@
-.card {
-  border: solid transparent;
-  border-radius: 8px;
-
-  transition: background-color 0.3s ease-in-out, border-style 0.3s ease-in-out, border-color 0.3s ease-in-out;
-
-  border-style: dashed;
-}
-
-.card:hover {
-  border: dashed #ffafcc;
-}
-
-.selected {
-  border: solid #3a86ff;
-}
-
-.selected:hover {
-  border: solid #3a86ff;
-}
-
 .discSpin {
   animation: spin 1s linear infinite;
 }
