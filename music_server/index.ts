@@ -2,6 +2,8 @@ import { join } from "path";
 
 const musicFolder = "../music/";
 
+const corsOrigin = process.env.CORS_ORIGIN || "*";
+
 Bun.serve({
   fetch(request) {
     const url = new URL(request.url);
@@ -15,7 +17,7 @@ Bun.serve({
     if (request.method === "OPTIONS") {
       return new Response("Departed", {
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": corsOrigin,
           "Access-Control-Allow-Methods": "GET, OPTIONS",
           "Accept-Ranges": "bytes",
           "Content-Type": file.type,
