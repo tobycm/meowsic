@@ -11,6 +11,7 @@
   "dependencies": {
     "@elysiajs/eden": "^1.2.0",
     "@fontsource/roboto": "^5.2.6",
+    "@fontsource/ubuntu": "^5.2.6",
     "@mantine/core": "^8.1.2",
     "@mantine/hooks": "^8.1.2",
     "@tabler/icons-react": "^3.34.0",

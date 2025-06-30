@@ -1,4 +1,4 @@
-import { ScrollArea, Stack } from "@mantine/core";
+import { ScrollArea, Stack, useMantineTheme } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useAppContext } from "../contexts/AppContext";
@@ -8,6 +8,8 @@ import SongCard from "./SongCard";
 
 export default function SongsList() {
   const { api } = useAppContext();
+
+  const theme = useMantineTheme();
 
   const isMobile = useMediaQuery("(max-width: 48rem)");
 
@@ -34,12 +36,13 @@ export default function SongsList() {
   });
 
   const nowPlayingId = useNowPlaying((state) => state.song?.id);
+  const playing = useNowPlaying((state) => state.playing);
 
   return (
-    <ScrollArea h="60vh" w={isMobile ? "100%" : "42vw"}>
+    <ScrollArea h="60vh" w={isMobile ? "100%" : "42vw"} bdrs="xl" style={{ boxShadow: theme.shadows.lg, backdropFilter: "blur(24px)" }}>
       <Stack gap="md" p="md">
         {songs.data?.map((song) => (
-          <SongCard song={song} key={song.id} isSelected={nowPlayingId === song.id} />
+          <SongCard song={song} key={song.id} selected={nowPlayingId === song.id} playing={nowPlayingId === song.id ? playing : false} />
         ))}
       </Stack>
     </ScrollArea>

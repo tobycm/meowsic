@@ -19,7 +19,7 @@ export default function AudioControls() {
   const playing = useNowPlaying((state) => state.playing);
 
   return (
-    <Stack align="center" bdrs={8} mx="xl" px="sm" py="lg" style={{ boxShadow: theme.shadows.sm }} flex={1}>
+    <Stack align="center" bdrs="xl" mx="xl" px="sm" py="lg" style={{ boxShadow: theme.shadows.lg, backdropFilter: "blur(24px)" }} flex={1}>
       <ProgressBar />
 
       <Group gap="md" mx="md" flex={1} w="100%" align="center" justify="center">
@@ -31,8 +31,6 @@ export default function AudioControls() {
           }}
           size="xl"
           radius="xl"
-          variant="filled"
-          color="blue"
           style={{ flex: 0 }}>
           {playing ? <IconPlayerPause size="1.5rem" /> : <IconPlayerPlay size="1.5rem" />}
         </ActionIcon>
@@ -50,6 +48,8 @@ function ProgressBar() {
     <Stack gap="md" mx="md" flex={5} w="100%" align="center">
       <Slider
         w="90%"
+        size="xl"
+        radius="md"
         value={currentTime}
         max={duration || 1} // Ensure max is at least 1 to prevent errors on load
         step={0.2}
@@ -61,7 +61,7 @@ function ProgressBar() {
         styles={{ thumb: { transition: "opacity 150ms ease" } }}
       />
 
-      <Text fz="sm" ta="center">
+      <Text fz="xl" ta="center">
         {humanTime(new Date((currentTime || 0) * 1000))} / {humanTime(new Date((duration || 0) * 1000))}
       </Text>
     </Stack>

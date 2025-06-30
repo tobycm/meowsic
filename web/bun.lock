@@ -6,6 +6,7 @@
       "dependencies": {
         "@elysiajs/eden": "^1.2.0",
         "@fontsource/roboto": "^5.2.6",
+        "@fontsource/ubuntu": "^5.2.6",
         "@mantine/core": "^8.1.2",
         "@mantine/hooks": "^8.1.2",
         "@tabler/icons-react": "^3.34.0",
@@ -162,6 +163,8 @@
     "@floating-ui/utils": ["@floating-ui/utils@0.2.9", "", {}, "sha512-MDWhGtE+eHw5JW7lq4qhc5yRLS11ERl1c7Z6Xd0a58DozHES6EnNNwUWbMiG4J9Cgj053Bhk8zvlhFYKVhULwg=="],
 
     "@fontsource/roboto": ["@fontsource/roboto@5.2.6", "", {}, "sha512-hzarG7yAhMoP418smNgfY4fO7UmuUEm5JUtbxCoCcFHT0hOJB+d/qAEyoNjz7YkPU5OjM2LM8rJnW8hfm0JLaA=="],
+
+    "@fontsource/ubuntu": ["@fontsource/ubuntu@5.2.6", "", {}, "sha512-ktUjEGS/QmvNmhO8Vb6kEv+BgTRspRUon07SkC7Rh/T4ziu8AfwJe2xuJzGxWv8fJqx0ZNYeCCJdABta7991sA=="],
 
     "@humanfs/core": ["@humanfs/core@0.19.1", "", {}, "sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA=="],
 

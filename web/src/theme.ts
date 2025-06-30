@@ -3,8 +3,8 @@ import { colorsTuple, createTheme } from "@mantine/core";
 const theme = createTheme({
   primaryColor: "primary",
 
-  fontFamily: "Roboto, sans-serif",
-  headings: { fontFamily: "Roboto, sans-serif" },
+  fontFamily: "Ubuntu, sans-serif",
+  headings: { fontFamily: "Ubuntu, sans-serif" },
 
   colors: {
     primary: colorsTuple("#ffafcc"),
@@ -15,6 +15,7 @@ const theme = createTheme({
     success: colorsTuple("#3a86ff"),
     purp: colorsTuple("#571089"),
     paper: colorsTuple("#efd9ce"),
+    vgrey: colorsTuple("#1e1e1e"),
   },
 });
 
