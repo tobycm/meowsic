@@ -9,20 +9,7 @@ import { databasePath, getDuration, parseInfoFromName } from "./utils";
 export async function startup() {
   console.log("Starting up meowsic...");
 
-  const db = new Database(databasePath, { create: true });
-
-  db.run(`
-    CREATE TABLE IF NOT EXISTS files (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        last_modified INTEGER NOT NULL,
-        added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        title TEXT,
-        artist TEXT,
-        album_art BLOB,
-        duration INTEGER
-    )
-`);
+  const db = new Database(databasePath);
 
   const musicFolder = process.env.MUSIC_FOLDER || "../music";
 
@@ -33,7 +20,7 @@ export async function startup() {
     `INSERT OR REPLACE INTO files (name, last_modified, added_at, title, artist, album_art, duration) VALUES (?, ?, ?, ?, ?, ?, ?)`
   );
 
-  const lowMem = freemem() < 0.9 * 1024 * 1024 * 1024;
+  const lowMem = process.env.OVERRIDE_MEMORY_CHECK != "true" && freemem() < 1 * 1024 * 1024 * 1024;
 
   const jobs: Promise<void>[] = [];
 

@@ -5,8 +5,11 @@ import { Elysia, t } from "elysia";
 import sharp from "sharp";
 import config from "./config";
 import { Song, TDatabaseFields, TImageTransform } from "./models";
+import setupDatabase from "./setup";
 import { startup } from "./startup";
 import { databasePath } from "./utils";
+
+if (!(await Bun.file(databasePath).exists())) await setupDatabase();
 
 await startup();
 
@@ -59,8 +62,11 @@ const app = new Elysia()
 
       const conditions = [];
       if (search) {
-        conditions.push(`(name LIKE ? OR title LIKE ? OR artist LIKE ?)`);
-        preparedFields.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        // conditions.push(`(name LIKE ? OR title LIKE ? OR artist LIKE ?)`);
+        // preparedFields.push(`%${search}%`, `%${search}%`, `%${search}%`);
+
+        conditions.push(`files.id IN (SELECT rowid FROM songs_fts WHERE songs_fts MATCH ?)`);
+        preparedFields.push(search);
       }
 
       if (artist) {
