@@ -15,3 +15,14 @@ export const TImageTransform = t.Object({
   width: t.Optional(t.Number()),
   height: t.Optional(t.Number()),
 });
+
+export const TDatabaseFields = t.Union([
+  t.Literal("id"),
+  t.Literal("name"),
+  t.Literal("last_modified"),
+  t.Literal("added_at"),
+  t.Literal("title"),
+  t.Literal("artist"),
+  t.Literal("album_art"),
+  t.Literal("duration"),
+]);

@@ -4,7 +4,7 @@ import Database from "bun:sqlite";
 import { Elysia, t } from "elysia";
 import sharp from "sharp";
 import config from "./config";
-import { Song, TImageTransform } from "./models";
+import { Song, TDatabaseFields, TImageTransform } from "./models";
 import { startup } from "./startup";
 import { databasePath } from "./utils";
 
@@ -52,21 +52,9 @@ const app = new Elysia()
   .get(
     "/songs",
     async ({ query }) => {
-      const {
-        limit = 100,
-        offset = 0,
-        sort = "name",
-        order = "asc",
-        search = "",
-        artist = "",
-        minDuration,
-        maxDuration,
-        fields = ["id", "name", "last_modified", "added_at", "title", "artist", "duration"],
+      const { limit, offset, sort, order, search, artist, minDuration, maxDuration, fields } = query;
 
-        albumArtTransform,
-      } = query;
-
-      let sqlStatement = `SELECT ${fields.join(", ")} FROM files`;
+      let sqlStatement = `SELECT ${fields!.join(", ")} FROM files`;
       const preparedFields = [];
 
       const conditions = [];
@@ -85,47 +73,16 @@ const app = new Elysia()
 
       if (conditions.length > 0) sqlStatement += ` WHERE ${conditions.join(" AND ")}`;
 
-      if (sort) sqlStatement += ` ORDER BY ${sort} ${order.toUpperCase()}`;
+      if (sort) sqlStatement += ` ORDER BY ${sort} ${order!.toUpperCase()}`;
       if (limit) sqlStatement += ` LIMIT ${limit}`;
       if (offset) sqlStatement += ` OFFSET ${offset}`;
-
-      // console.log("SQL Statement:", sqlStatement);
 
       const songs = db
         .prepare(sqlStatement)
         .as(Song)
         .all(...preparedFields);
 
-      if (albumArtTransform) {
-        const promises: Promise<void>[] = [];
-
-        for (const song of songs) {
-          if (!song.album_art) continue;
-
-          let image = sharp(Buffer.from(song.album_art), { failOnError: false });
-
-          if (albumArtTransform.width || albumArtTransform.height) {
-            image = image.resize({
-              width: albumArtTransform.width,
-              height: albumArtTransform.height,
-              fit: "inside",
-            });
-          }
-
-          promises.push(
-            (async () => {
-              song.album_art = await image.toBuffer();
-            })()
-          );
-        }
-
-        await Promise.all(promises);
-      }
-
-      return songs.map((song) => ({
-        ...song,
-        album_art: song.album_art ? `data:image/png;base64,${song.album_art.toBase64()}` : undefined,
-      }));
+      return songs;
     },
     {
       query: t.Object({
@@ -141,9 +98,11 @@ const app = new Elysia()
         minDuration: t.Optional(t.Number()),
         maxDuration: t.Optional(t.Number()),
 
-        albumArtTransform: t.Optional(TImageTransform),
-
-        fields: t.Optional(t.Array(t.String(), { default: ["id", "name", "last_modified", "added_at", "title", "artist", "duration"] })),
+        fields: t.Optional(
+          t.Array(t.Exclude(TDatabaseFields, t.Union([t.Literal("album_art"), t.Literal("last_modified")])), {
+            default: ["id", "name", "title", "artist", "duration"],
+          })
+        ),
       }),
     }
   )
@@ -151,32 +110,15 @@ const app = new Elysia()
     "/songs/:id",
     async ({ params, query }) => {
       const { id } = params;
-      const { fields = ["id", "name", "last_modified", "added_at", "title", "artist", "duration"], albumArtTransform } = query;
+      const { fields } = query;
       const song = db
-        .query(`SELECT ${fields.join(", ")} FROM files WHERE id = ?`)
+        .query(`SELECT ${fields!.join(", ")} FROM files WHERE id = ?`)
         .as(Song)
         .get(id);
 
       if (!song) return new Response("Song not found", { status: 404 });
 
-      if (albumArtTransform && song.album_art) {
-        let image = sharp(Buffer.from(song.album_art), { failOnError: false });
-
-        if (albumArtTransform.width || albumArtTransform.height) {
-          image = image.resize({
-            width: albumArtTransform.width,
-            height: albumArtTransform.height,
-            fit: "inside",
-          });
-        }
-
-        song.album_art = await image.toBuffer();
-      }
-
-      return {
-        ...song,
-        album_art: song.album_art ? `data:image/png;base64,${song.album_art.toBase64()}` : undefined,
-      };
+      return song;
     },
     {
       params: t.Object({
@@ -184,9 +126,11 @@ const app = new Elysia()
       }),
 
       query: t.Object({
-        albumArtTransform: t.Optional(TImageTransform),
-
-        fields: t.Optional(t.Array(t.String(), { default: ["id", "name", "last_modified", "added_at", "title", "artist", "duration"] })),
+        fields: t.Optional(
+          t.Array(t.Exclude(TDatabaseFields, t.Union([t.Literal("album_art"), t.Literal("last_modified")])), {
+            default: ["id", "name", "title", "artist", "duration"],
+          })
+        ),
       }),
     }
   )
