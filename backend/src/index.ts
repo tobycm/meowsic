@@ -62,9 +62,6 @@ const app = new Elysia()
 
       const conditions = [];
       if (search) {
-        // conditions.push(`(name LIKE ? OR title LIKE ? OR artist LIKE ?)`);
-        // preparedFields.push(`%${search}%`, `%${search}%`, `%${search}%`);
-
         conditions.push(`files.id IN (SELECT rowid FROM songs_fts WHERE songs_fts MATCH ?)`);
         preparedFields.push(search);
       }
@@ -79,9 +76,11 @@ const app = new Elysia()
 
       if (conditions.length > 0) sqlStatement += ` WHERE ${conditions.join(" AND ")}`;
 
-      if (sort) sqlStatement += ` ORDER BY ${sort} ${order!.toUpperCase()}`;
+      if (sort && order) sqlStatement += ` ORDER BY ${sort} ${order.toUpperCase()}`;
       if (limit) sqlStatement += ` LIMIT ${limit}`;
       if (offset) sqlStatement += ` OFFSET ${offset}`;
+
+      console.log(sqlStatement);
 
       const songs = db
         .prepare(sqlStatement)
@@ -92,10 +91,10 @@ const app = new Elysia()
     },
     {
       query: t.Object({
-        limit: t.Optional(t.Number({ default: 100 })),
+        limit: t.Optional(t.Number({ default: 20 })),
         offset: t.Optional(t.Number({ default: 0 })),
 
-        sort: t.Optional(t.Union([t.Literal("name"), t.Literal("last_modified"), t.Literal("added_at")], { default: "name" })),
+        sort: t.Optional(t.Union([t.Literal("name"), t.Literal("last_modified"), t.Literal("added_at")])),
         order: t.Optional(t.Union([t.Literal("asc"), t.Literal("desc")], { default: "asc" })),
 
         search: t.Optional(t.String()),
