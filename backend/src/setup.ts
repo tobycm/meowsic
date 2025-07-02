@@ -27,6 +27,8 @@ export default async function setupDatabase() {
     CREATE INDEX IF NOT EXISTS idx_files_name ON files(name);
   `);
 
+  console.log("✅ Database tables and indexes created successfully.");
+
   // 1. Create the FTS virtual table
   // This table will store the text you want to search.
   // - `name`, `title`, `artist`: The columns to index.

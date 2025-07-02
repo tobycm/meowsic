@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import type { Song } from "../lib/api";
 
+type LoopMode = "off" | "one" | "all";
+
 const initial = {
   song: undefined,
   playing: false,
@@ -9,7 +11,7 @@ const initial = {
   duration: 0,
   playbackRate: 1.0,
   seeking: false,
-  loop: false,
+  loop: "off",
   shuffle: false,
   muted: false,
   volume: 0.5,
@@ -25,7 +27,7 @@ type PlayerState = Omit<typeof initial, "song"> & {
   seek: (time: number) => void;
   setVolume: (volume: number) => void;
   setPlaybackRate: (rate: number) => void;
-  setLoop: (loop: boolean) => void;
+  setLoop: (loop: LoopMode) => void;
   toggleLoop: () => void;
   setShuffle: (shuffle: boolean) => void;
   toggleShuffle: () => void;
@@ -49,8 +51,13 @@ export const useNowPlaying = create<PlayerState>((set) => ({
 
   setPlaybackRate: (rate: number) => set({ playbackRate: rate }),
 
-  setLoop: (loop: boolean) => set({ loop }),
-  toggleLoop: () => set((state) => ({ loop: !state.loop })),
+  setLoop: (loop: LoopMode) => set({ loop }),
+  toggleLoop: () =>
+    set((state) => {
+      if (state.loop === "off") return { loop: "all" };
+      if (state.loop === "all") return { loop: "one" };
+      return { loop: "off" };
+    }),
 
   setShuffle: (shuffle: boolean) => set({ shuffle }),
   toggleShuffle: () => set((state) => ({ shuffle: !state.shuffle })),

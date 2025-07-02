@@ -80,7 +80,7 @@ const app = new Elysia()
       if (limit) sqlStatement += ` LIMIT ${limit}`;
       if (offset) sqlStatement += ` OFFSET ${offset}`;
 
-      console.log(sqlStatement);
+      // console.log(sqlStatement);
 
       const songs = db
         .prepare(sqlStatement)

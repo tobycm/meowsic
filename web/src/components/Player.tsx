@@ -36,7 +36,7 @@ export default function Player() {
       playing={playing}
       volume={volume}
       playbackRate={playbackRate}
-      loop={loop}
+      loop={loop === "one"}
       muted={muted}
       controls={false}
       onTimeUpdate={() => {
