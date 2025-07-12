@@ -4,7 +4,7 @@ import { freemem } from "os";
 
 import { read } from "node-id3";
 import { Song } from "./models";
-import { databasePath, getDuration, parseInfoFromName } from "./utils";
+import { albumArtFolder, databasePath, getDuration, parseInfoFromName } from "./utils";
 
 export async function startup() {
   console.log("Starting up meowsic...");
@@ -16,13 +16,28 @@ export async function startup() {
   const glob = new Glob("*");
 
   const selectLastModified = db.query(`SELECT last_modified FROM files WHERE name = ?`).as(Song);
-  const insertFile = db.query(
-    `INSERT OR REPLACE INTO files (name, last_modified, added_at, title, artist, album_art, duration) VALUES (?, ?, ?, ?, ?, ?, ?)`
-  );
+  const insertFile = db
+    .query(
+      `
+        INSERT OR REPLACE INTO files (
+          name,
+          last_modified,
+          added_at,
+          title,
+          artist,
+          duration
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        RETURNING id
+      `
+    )
+    .as(Song);
 
   const lowMem = process.env.OVERRIDE_MEMORY_CHECK != "true" && freemem() < 1 * 1024 * 1024 * 1024;
 
   const jobs: Promise<void>[] = [];
+
+  let dirty = false;
 
   for (const fileName of glob.scanSync(musicFolder)) {
     if (!fileName.endsWith(".mp3")) continue;
@@ -49,21 +64,47 @@ export async function startup() {
 
       const duration = await getDuration(file.name!);
 
-      insertFile.run(fileName, file.lastModified, new Date().toISOString(), tags.title || null, tags.artist || null, image || null, duration || null);
+      const row = insertFile.get(fileName, file.lastModified, new Date().toISOString(), tags.title || null, tags.artist || null, duration || null);
+
+      if (!row) {
+        console.error(`Failed to insert file: ${fileName}`);
+        return;
+      }
+
+      if (!image) return;
+
+      const artFile = Bun.file(`${albumArtFolder}/${row.id}.png`);
+      await artFile.write(image);
     }
 
     if (lowMem) await processFile(fileName);
     else jobs.push(processFile(fileName)); // Process the file asynchronously
+
+    dirty = true;
   }
 
   await Promise.all(jobs);
 
-  const deleteFile = db.query("DELETE FROM files WHERE id = ?");
+  const deleteFile = db.query("DELETE FROM files WHERE id = ? RETURNING id").as(Song);
 
   for (const file of db.query("SELECT id, name FROM files").as(Song)) {
     if (await Bun.file(`${musicFolder}/${file.name}`).exists()) return;
 
     console.log(`File not found: ${`${musicFolder}/${file.name}`}, deleting from database.`);
     deleteFile.run(file.id!);
+
+    const artFile = Bun.file(`${albumArtFolder}/${file.id}.png`);
+    if (await artFile.exists()) {
+      console.log(`Deleting album art for file: ${file.name}`);
+      await artFile.unlink();
+    }
+
+    dirty = true;
+  }
+
+  if (dirty) {
+    db.run(`REINDEX files;`);
+  } else {
+    console.log("No new files found, database is up to date.");
   }
 }

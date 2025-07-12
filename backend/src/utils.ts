@@ -1,4 +1,5 @@
 export const databasePath = process.env.DATABASE_PATH || "../data/meowsic.sqlite";
+export const albumArtFolder = process.env.ALBUM_ART_FOLDER || "../data/album_art";
 
 export function parseInfoFromName(name: string): { artist?: string; title?: string } {
   let parts = name.split("[");

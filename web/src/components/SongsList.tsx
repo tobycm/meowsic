@@ -1,13 +1,10 @@
 import { Center, Loader, ScrollArea, Stack, Text, useMantineTheme } from "@mantine/core";
-import { useIntersection, useMediaQuery } from "@mantine/hooks";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useMediaQuery } from "@mantine/hooks";
+import { useQuery } from "@tanstack/react-query";
 import { useAppContext } from "../contexts/AppContext";
 import { Song } from "../lib/api";
 import { useNowPlaying } from "../states/NowPlaying";
 import SongCard from "./SongCard";
-
-const PageLimit = 20;
 
 export default function SongsList() {
   const { api } = useAppContext();
@@ -16,15 +13,11 @@ export default function SongsList() {
 
   const isMobile = useMediaQuery("(max-width: 48rem)");
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+  const songs = useQuery({
     queryKey: ["songs", ["id", "name", "title", "artist", "duration"]],
 
-    queryFn: async ({ pageParam }) => {
-      const songs = await api.songs({
-        limit: PageLimit,
-        offset: pageParam,
-        fields: ["id", "name", "title", "artist", "duration"],
-      });
+    queryFn: async () => {
+      const songs = await api.songs({ limit: 0, fields: ["id", "name", "title", "artist", "duration"] });
 
       return songs.map(
         (song) =>
@@ -37,30 +30,7 @@ export default function SongsList() {
           })
       );
     },
-    initialPageParam: 0,
-
-    getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length < PageLimit) {
-        return undefined;
-      }
-
-      return allPages.length * PageLimit;
-    },
   });
-
-  const lastSongsRef = useRef(null);
-  const { ref, entry } = useIntersection({
-    root: lastSongsRef.current,
-    threshold: 0.1,
-  });
-
-  useEffect(() => {
-    if (entry?.isIntersecting && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [entry, hasNextPage, fetchNextPage]);
-
-  const songs = data?.pages.flatMap((page) => page) ?? [];
 
   const nowPlayingId = useNowPlaying((state) => state.song?.id);
   const playing = useNowPlaying((state) => state.playing);
@@ -73,19 +43,25 @@ export default function SongsList() {
       bg="#FFFFFF3F"
       style={{ boxShadow: theme.shadows.lg, backdropFilter: "blur(24px)" }}>
       <Stack gap="md" p="md">
-        {songs.map((song) => (
-          <SongCard song={song} key={song.id} selected={nowPlayingId === song.id} playing={nowPlayingId === song.id ? playing : false} />
-        ))}
+        {!songs.isFetched && (
+          <Center mt="xl">
+            <Loader size="xl" />
+          </Center>
+        )}
 
-        {/* This is the trigger element */}
-        <Center ref={ref} mt="md">
-          {isFetchingNextPage && <Loader />}
-          {!hasNextPage && songs.length > 0 && (
+        {songs.isFetched &&
+          !!songs.data &&
+          songs.data.map((song) => (
+            <SongCard song={song} key={song.id} selected={nowPlayingId === song.id} playing={nowPlayingId === song.id ? playing : false} />
+          ))}
+
+        {songs.isFetched && !!songs.data && (
+          <Center mt="md">
             <Text c="dimmed" size="sm">
               End of playlist
             </Text>
-          )}
-        </Center>
+          </Center>
+        )}
       </Stack>
     </ScrollArea>
   );

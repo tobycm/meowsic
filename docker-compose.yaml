@@ -22,14 +22,5 @@ services:
       - meowsic-data:/data
       - ./music:/music:ro
 
-  music_server:
-    build:
-      context: ./music_server/
-      dockerfile: Dockerfile
-    container_name: meowsic-music-server
-    restart: unless-stopped
-    ports:
-      - "3458:3458"
-
 volumes:
   meowsic-data:

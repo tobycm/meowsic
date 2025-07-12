@@ -1,4 +1,5 @@
 import cors from "@elysiajs/cors";
+import staticPlugin from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 import Database from "bun:sqlite";
 import { Elysia, t } from "elysia";
@@ -7,7 +8,7 @@ import config from "./config";
 import { Song, TDatabaseFields, TImageTransform } from "./models";
 import setupDatabase from "./setup";
 import { startup } from "./startup";
-import { databasePath } from "./utils";
+import { albumArtFolder, databasePath } from "./utils";
 
 if (!(await Bun.file(databasePath).exists())) await setupDatabase();
 
@@ -52,12 +53,18 @@ const app = new Elysia()
       }),
     }
   )
+
+  .use(staticPlugin({ assets: "../music", prefix: "/music" })) // Serve music files from the music folder
+
   .get(
     "/songs",
     async ({ query }) => {
       const { limit, offset, sort, order, search, artist, minDuration, maxDuration, fields } = query;
 
       let sqlStatement = `SELECT ${fields!.join(", ")} FROM files`;
+
+      // sqlStatement = "EXPLAIN QUERY PLAN " + sqlStatement;
+
       const preparedFields = [];
 
       const conditions = [];
@@ -80,12 +87,14 @@ const app = new Elysia()
       if (limit) sqlStatement += ` LIMIT ${limit}`;
       if (offset) sqlStatement += ` OFFSET ${offset}`;
 
-      // console.log(sqlStatement);
+      console.log(sqlStatement);
 
+      console.time("DB Query");
       const songs = db
         .prepare(sqlStatement)
         .as(Song)
         .all(...preparedFields);
+      console.timeEnd("DB Query");
 
       return songs;
     },
@@ -144,17 +153,23 @@ const app = new Elysia()
     async ({ params, query }) => {
       const { id } = params;
       const { width, height } = query;
-      const song = db.query("SELECT album_art FROM files WHERE id = ?").as(Song).get(id);
-      if (!song || !song.album_art) return new Response("Album art not found", { status: 404 });
 
-      let image = sharp(Buffer.from(song.album_art), { failOnError: false });
-      if (width || height) {
-        image = image.resize({
-          width: width ? parseInt(width.toString(), 10) : undefined,
-          height: height ? parseInt(height.toString(), 10) : undefined,
-          fit: "inside",
+      const file = Bun.file(`${albumArtFolder}/${id}.png`);
+
+      if (!width && !height)
+        return new Response(file, {
+          headers: {
+            "Content-Type": "image/png",
+            "Cache-Control": "public, max-age=3600", // Cache for 1 hour
+          },
         });
-      }
+
+      if (!(await file.exists())) return new Response("Album art not found", { status: 404 });
+      let image = sharp(Buffer.from(await file.arrayBuffer()), { failOnError: false }).resize({
+        width: width ? parseInt(width.toString(), 10) : undefined,
+        height: height ? parseInt(height.toString(), 10) : undefined,
+        fit: "inside",
+      });
       const buffer = await image.toBuffer();
       return new Response(buffer, {
         headers: {

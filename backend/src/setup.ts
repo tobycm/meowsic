@@ -14,7 +14,6 @@ export default async function setupDatabase() {
       added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       title TEXT,
       artist TEXT,
-      album_art BLOB,
       duration INTEGER
     )
   `);

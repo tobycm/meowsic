@@ -7,7 +7,6 @@ export class Song {
   added_at?: string;
   title?: string;
   artist?: string;
-  album_art?: Uint8Array;
   duration?: number;
 }
 
@@ -23,6 +22,5 @@ export const TDatabaseFields = t.Union([
   t.Literal("added_at"),
   t.Literal("title"),
   t.Literal("artist"),
-  t.Literal("album_art"),
   t.Literal("duration"),
 ]);
