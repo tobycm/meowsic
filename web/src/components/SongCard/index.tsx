@@ -42,10 +42,10 @@ function SongCard({ song, selected, playing }: { song: Song; selected?: boolean;
         <Image
           src={song.albumArt()}
           srcSet={`
-            ${song.albumArt({ height: 320 })} 320h,
-            ${song.albumArt({ height: 240 })} 240h,
-            ${song.albumArt({ height: 160 })} 160h,
-            ${song.albumArt({ height: 80 })} 80h
+            ${song.albumArt({ height: 320 })} 320w,
+            ${song.albumArt({ height: 240 })} 240w,
+            ${song.albumArt({ height: 160 })} 160w,
+            ${song.albumArt({ height: 80 })} 80w
             `}
           sizes="80px"
           alt={`${song.name} by ${song.artist}`}
