@@ -1,14 +1,12 @@
 import cors from "@elysiajs/cors";
-import staticPlugin from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 import Database from "bun:sqlite";
 import { Elysia, t } from "elysia";
-import sharp from "sharp";
 import config from "./config";
 import { Song, TDatabaseFields, TImageTransform } from "./models";
 import setupDatabase from "./setup";
 import { startup } from "./startup";
-import { albumArtFolder, databasePath } from "./utils";
+import { databasePath, getAlbumArt, musicFolder } from "./utils";
 
 if (!(await Bun.file(databasePath).exists())) await setupDatabase();
 
@@ -53,8 +51,6 @@ const app = new Elysia()
       }),
     }
   )
-
-  .use(staticPlugin({ assets: "../music", prefix: "/music" })) // Serve music files from the music folder
 
   .get(
     "/songs",
@@ -159,24 +155,9 @@ const app = new Elysia()
       const { id } = params;
       const { width, height } = query;
 
-      const file = Bun.file(`${albumArtFolder}/${id}.png`);
+      const file = await getAlbumArt(id, { width, height });
 
-      if (!width && !height)
-        return new Response(file, {
-          headers: {
-            "Content-Type": "image/png",
-            "Cache-Control": "public, max-age=3600", // Cache for 1 hour
-          },
-        });
-
-      if (!(await file.exists())) return new Response("Album art not found", { status: 404 });
-      let image = sharp(Buffer.from(await file.arrayBuffer()), { failOnError: false }).resize({
-        width: width ? parseInt(width.toString(), 10) : undefined,
-        height: height ? parseInt(height.toString(), 10) : undefined,
-        fit: "inside",
-      });
-      const buffer = await image.toBuffer();
-      return new Response(buffer, {
+      return new Response(file, {
         headers: {
           "Content-Type": "image/png",
           "Cache-Control": "public, max-age=3600", // Cache for 1 hour
@@ -189,6 +170,29 @@ const app = new Elysia()
       }),
 
       query: TImageTransform,
+    }
+  )
+  .get(
+    "/music/:fileName",
+    async ({ params }) => {
+      const { fileName } = params;
+
+      const file = Bun.file(`${musicFolder}/${decodeURIComponent(fileName)}`);
+
+      return new Response(file, {
+        headers: {
+          Connection: "keep-alive",
+          "Content-Type": file.type,
+          "Content-Length": file.size.toString(),
+          "Cache-Control": "public, max-age=3600", // Cache for 1 hour
+        },
+        status: 206,
+      });
+    },
+    {
+      params: t.Object({
+        fileName: t.String(),
+      }),
     }
   )
 

@@ -14,10 +14,14 @@ export default function SongsList() {
   const isMobile = useMediaQuery("(max-width: 48rem)");
 
   const songs = useQuery({
-    queryKey: ["songs", ["id", "name", "title", "artist", "duration"]],
+    queryKey: ["songs", ["sort", "name"], ["order", "asc"], ["limit", 0]],
 
     queryFn: async () => {
-      const songs = await api.songs({ limit: 0, fields: ["id", "name", "title", "artist", "duration"] });
+      const songs = await api.songs({
+        sort: "name",
+        order: "asc",
+        limit: 0,
+      });
 
       return songs.map(
         (song) =>

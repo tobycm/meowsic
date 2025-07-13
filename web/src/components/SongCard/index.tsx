@@ -40,7 +40,14 @@ function SongCard({ song, selected, playing }: { song: Song; selected?: boolean;
       style={{ cursor: "pointer", transition: "background-color 0.2s ease-in-out", boxShadow: theme.shadows.sm }}>
       <Skeleton visible={!imageLoaded} h={height} w={height} bdrs="md" miw={height} mih={height} animate>
         <Image
-          src={song.albumArt({ height: 80 })}
+          src={song.albumArt()}
+          srcSet={`
+            ${song.albumArt({ height: 320 })} 320h,
+            ${song.albumArt({ height: 240 })} 240h,
+            ${song.albumArt({ height: 160 })} 160h,
+            ${song.albumArt({ height: 80 })} 80h
+            `}
+          sizes="80px"
           alt={`${song.name} by ${song.artist}`}
           radius="md"
           bdrs="md"

@@ -4,14 +4,12 @@ import { freemem } from "os";
 
 import { read } from "node-id3";
 import { Song } from "./models";
-import { albumArtFolder, databasePath, getDuration, parseInfoFromName } from "./utils";
+import { albumArtFolder, databasePath, getDuration, musicFolder, parseInfoFromName } from "./utils";
 
 export async function startup() {
   console.log("Starting up meowsic...");
 
   const db = new Database(databasePath);
-
-  const musicFolder = process.env.MUSIC_FOLDER || "../music";
 
   const glob = new Glob("*");
 
