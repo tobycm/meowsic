@@ -87,14 +87,14 @@ const app = new Elysia()
       if (limit) sqlStatement += ` LIMIT ${limit}`;
       if (offset) sqlStatement += ` OFFSET ${offset}`;
 
-      console.log(sqlStatement);
+      // console.log(sqlStatement);
 
-      console.time("DB Query");
+      // console.time("DB Query");
       const songs = db
         .prepare(sqlStatement)
         .as(Song)
         .all(...preparedFields);
-      console.timeEnd("DB Query");
+      // console.timeEnd("DB Query");
 
       return songs;
     },
