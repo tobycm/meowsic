@@ -103,7 +103,12 @@ const app = new Elysia()
         limit: t.Optional(t.Number({ default: 20 })),
         offset: t.Optional(t.Number({ default: 0 })),
 
-        sort: t.Optional(t.Union([t.Literal("name"), t.Literal("last_modified"), t.Literal("added_at")])),
+        sort: t.Optional(
+          t.Union(
+            [t.Literal("name"), t.Literal("last_modified"), t.Literal("added_at"), t.Literal("title"), t.Literal("artist"), t.Literal("duration")],
+            { default: "name" }
+          )
+        ),
         order: t.Optional(t.Union([t.Literal("asc"), t.Literal("desc")], { default: "asc" })),
 
         search: t.Optional(t.String()),
