@@ -113,11 +113,7 @@ const app = new Elysia()
         minDuration: t.Optional(t.Number()),
         maxDuration: t.Optional(t.Number()),
 
-        fields: t.Optional(
-          t.Array(t.Exclude(TDatabaseFields, t.Union([t.Literal("album_art"), t.Literal("last_modified")])), {
-            default: ["id", "name", "title", "artist", "duration"],
-          })
-        ),
+        fields: t.Optional(t.Array(TDatabaseFields, { default: ["id", "name", "title", "artist", "duration"] })),
       }),
     }
   )
@@ -126,10 +122,7 @@ const app = new Elysia()
     async ({ params, query }) => {
       const { id } = params;
       const { fields } = query;
-      const song = db
-        .query(`SELECT ${fields!.join(", ")} FROM files WHERE id = ?`)
-        .as(Song)
-        .get(id);
+      const song = db.query(`SELECT ${fields!.join(", ")} FROM files WHERE id = ?`).get(id);
 
       if (!song) return new Response("Song not found", { status: 404 });
 
@@ -141,11 +134,7 @@ const app = new Elysia()
       }),
 
       query: t.Object({
-        fields: t.Optional(
-          t.Array(t.Exclude(TDatabaseFields, t.Union([t.Literal("album_art"), t.Literal("last_modified")])), {
-            default: ["id", "name", "title", "artist", "duration"],
-          })
-        ),
+        fields: t.Optional(t.Array(TDatabaseFields, { default: ["id", "name", "title", "artist", "duration"] })),
       }),
     }
   )
