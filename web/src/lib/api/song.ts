@@ -38,7 +38,7 @@ export class Song {
   }
 
   get src(): string {
-    return new URL(musicUrl + `/music/${this.name}`).toString();
+    return new URL(musicUrl + `/music/${encodeURIComponent(this.name)}`).toString();
   }
 
   get url(): string {

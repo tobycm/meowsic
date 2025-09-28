@@ -7,7 +7,7 @@ import AudioControls from "./AudioControls";
 export default function NowPlaying() {
   const theme = useMantineTheme();
 
-  const isMobile = useMediaQuery("(max-width: 48rem)");
+  const isMobile = useMediaQuery("(max-width: 56rem)");
 
   const song = useNowPlaying(useShallow((state) => state.song));
 

@@ -16,11 +16,11 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import App from "./App.tsx";
 import AppProvider from "./contexts/AppContext.tsx";
 import { api } from "./lib/api";
-import theme from "./theme.ts";
 
-import { MantineProvider } from "@mantine/core";
+import { colorsTuple, createTheme, MantineProvider } from "@mantine/core";
 import Player from "./components/Player.tsx";
 import "./index.css";
+import { useNowPlaying } from "./states/NowPlaying.ts";
 
 scan({
   enabled: true,
@@ -35,8 +35,30 @@ const queryClient = new QueryClient({
   },
 });
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+// eslint-disable-next-line react-refresh/only-export-components
+function Root() {
+  const dominantColor = useNowPlaying((state) => state.dominantColor);
+
+  const theme = createTheme({
+    primaryColor: "primary",
+
+    fontFamily: "Ubuntu, sans-serif",
+    headings: { fontFamily: "Ubuntu, sans-serif" },
+
+    colors: {
+      primary: colorsTuple(dominantColor || "#ffafcc"),
+      secondary: colorsTuple("#cdb4db"),
+      error: colorsTuple("#ff006e"),
+      warn: colorsTuple("#ffbe0b"),
+      info: colorsTuple("#ffc8dd"),
+      success: colorsTuple("#3a86ff"),
+      purp: colorsTuple("#571089"),
+      paper: colorsTuple("#efd9ce"),
+      vgrey: colorsTuple("#1e1e1e"),
+    },
+  });
+
+  return (
     <MantineProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools initialIsOpen={false} />
@@ -47,5 +69,11 @@ createRoot(document.getElementById("root")!).render(
         </AppProvider>
       </QueryClientProvider>
     </MantineProvider>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <Root />
   </StrictMode>
 );

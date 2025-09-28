@@ -2,23 +2,29 @@ import { Flex, Image, Skeleton, Stack, Text, useMantineTheme } from "@mantine/co
 
 import { IconDisc, IconPlayerPlay } from "@tabler/icons-react";
 import { memo, useState } from "react";
-import { useShallow } from "zustand/shallow";
 
 import { Song } from "../../lib/api";
 import { humanTime } from "../../lib/utils";
-import { useNowPlaying } from "../../states/NowPlaying";
 
 import { useHover, useMediaQuery } from "@mantine/hooks";
 import classes from "./index.module.css";
 
-function SongCard({ song, selected, playing }: { song: Song; selected?: boolean; playing?: boolean }) {
+function SongCard({
+  song,
+  selected,
+  playing,
+  load,
+}: {
+  song: Song;
+  selected?: boolean;
+  playing?: boolean;
+  load?: (song: Song, autoplay?: boolean) => void;
+}) {
   const theme = useMantineTheme();
 
-  const isMobile = useMediaQuery("(max-width: 48rem)");
+  const isMobile = useMediaQuery("(max-width: 56rem)");
 
   const hover = useHover();
-
-  const load = useNowPlaying(useShallow((state) => state.load));
 
   const duration = new Date(song.duration * 1000);
 
@@ -35,6 +41,7 @@ function SongCard({ song, selected, playing }: { song: Song; selected?: boolean;
       onClick={(e) => {
         e.stopPropagation();
         if (selected) return;
+        if (!load) return;
         load(song, true);
       }}
       style={{ cursor: "pointer", transition: "background-color 0.2s ease-in-out", boxShadow: theme.shadows.sm }}>

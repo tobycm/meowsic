@@ -161,21 +161,60 @@ const app = new Elysia()
       query: TImageTransform,
     }
   )
+
   .get(
     "/music/:fileName",
-    async ({ params }) => {
+    async ({ params, request }) => {
       const { fileName } = params;
+      const filePath = `${musicFolder}/${decodeURIComponent(fileName)}`;
+      const file = Bun.file(filePath);
 
-      const file = Bun.file(`${musicFolder}/${decodeURIComponent(fileName)}`);
+      if (!(await file.exists())) {
+        return new Response("Not Found", { status: 404 });
+      }
 
-      return new Response(file, {
+      const fileSize = file.size;
+      const range = request.headers.get("range");
+
+      const headers = {
+        "Content-Type": file.type,
+        "Accept-Ranges": "bytes", // range requests
+        "Cache-Control": "public, max-age=3600",
+      };
+
+      if (!range) {
+        return new Response(file, {
+          headers: {
+            ...headers,
+            "Content-Length": fileSize.toString(),
+          },
+          status: 200,
+        });
+      }
+
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+
+      if (start >= fileSize) {
+        return new Response("Range Not Satisfiable", {
+          status: 416,
+          headers: {
+            "Content-Range": `bytes */${fileSize}`,
+          },
+        });
+      }
+
+      const chunksize = end - start + 1;
+      const fileSlice = file.slice(start, end + 1);
+
+      return new Response(fileSlice, {
         headers: {
-          Connection: "keep-alive",
-          "Content-Type": file.type,
-          "Content-Length": file.size.toString(),
-          "Cache-Control": "public, max-age=3600", // Cache for 1 hour
+          ...headers,
+          "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+          "Content-Length": chunksize.toString(),
         },
-        status: 206,
+        status: 206, // Partial Content
       });
     },
     {

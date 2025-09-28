@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Slider, Stack, Text, Popover, Button, useMantineTheme } from "@mantine/core";
+import { ActionIcon, Button, Group, Popover, Slider, Stack, Text, useMantineTheme } from "@mantine/core";
 import {
   IconArrowsRight,
   IconArrowsShuffle,
@@ -33,7 +33,7 @@ export default function AudioControls() {
   return (
     <Stack
       align="center"
-      bg="#FFFFFF3F"
+      bg="#1e1e1e70"
       bdrs="xl"
       mx="xl"
       px="sm"
@@ -52,7 +52,7 @@ export default function AudioControls() {
           {shuffle ? <IconArrowsShuffle size="1.2rem" /> : <IconArrowsRight size="1.2rem" />}
         </ActionIcon>
         <ActionIcon onClick={toggleLoop} variant="subtle" size="lg">
-          {loop === "off" ? <IconRepeatOff size="1.2rem" /> : loop === "one" ? <IconRepeatOnce size="1.2rem" /> : <IconRepeat size="1.5rem" />}
+          {loop === "off" ? <IconRepeatOff size="1.2rem" /> : loop === "one" ? <IconRepeatOnce size="1.2rem" /> : <IconRepeat size="1.2rem" />}
         </ActionIcon>
       </Group>
     </Stack>
@@ -140,7 +140,7 @@ function SpeedSelect() {
         <Stack gap="md" align="center" w="100%">
           <Slider onChange={setPlaybackRate} value={playbackRate} min={0.05} step={0.05} defaultValue={1} max={2} size="xl" radius="xl" w="100%" />
 
-          <Group gap="xs" justify="space-between" w="100%">
+          <Group justify="space-between" w="100%">
             <Button onClick={() => setPlaybackRate(0.1)} variant="subtle" size="xs" radius="xl" style={{ flex: 1 }} miw="3rem">
               0.1x
             </Button>
