@@ -3,11 +3,12 @@ import ColorThief from "colorthief";
 import { setLightness } from "polished";
 import { useRef } from "react";
 import { useShallow } from "zustand/shallow";
+import { useAppState } from "../states/AppState";
 import { useNowPlaying } from "../states/NowPlaying";
 
 export default function NowPlayingBackground() {
   const song = useNowPlaying(useShallow((state) => state.song));
-  const setDominantColor = useNowPlaying(useShallow((state) => state.setDominantColor));
+  const setDominantColor = useAppState(useShallow((state) => state.setDominantColor));
 
   const imgRef = useRef<HTMLImageElement>(null);
 

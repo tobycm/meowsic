@@ -14,3 +14,9 @@ export function humanTime(date: Date): string {
 
   return result;
 }
+
+export function randomItem<T>(array: T[]): T | undefined {
+  if (array.length === 0) return undefined;
+  const index = Math.floor(Math.random() * array.length);
+  return array[index];
+}

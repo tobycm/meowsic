@@ -18,9 +18,10 @@ import AppProvider from "./contexts/AppContext.tsx";
 import { api } from "./lib/api";
 
 import { colorsTuple, createTheme, MantineProvider } from "@mantine/core";
+import MediaSession from "./components/MediaSession.tsx";
 import Player from "./components/Player.tsx";
 import "./index.css";
-import { useNowPlaying } from "./states/NowPlaying.ts";
+import { useAppState } from "./states/AppState.ts";
 
 scan({
   enabled: true,
@@ -37,7 +38,7 @@ const queryClient = new QueryClient({
 
 // eslint-disable-next-line react-refresh/only-export-components
 function Root() {
-  const dominantColor = useNowPlaying((state) => state.dominantColor);
+  const dominantColor = useAppState((state) => state.dominantColor);
 
   const theme = createTheme({
     primaryColor: "primary",
@@ -64,6 +65,7 @@ function Root() {
         <ReactQueryDevtools initialIsOpen={false} />
 
         <AppProvider api={api}>
+          <MediaSession />
           <Player />
           <App />
         </AppProvider>

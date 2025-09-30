@@ -11,15 +11,19 @@ import {
   IconVolume,
   IconVolumeOff,
 } from "@tabler/icons-react";
+import { useQuery } from "@tanstack/react-query";
 import { useShallow } from "zustand/shallow";
-import { humanTime } from "../../lib/utils";
-import { useNowPlaying } from "../../states/NowPlaying";
+import { useAppContext } from "../contexts/AppContext";
+import { Song } from "../lib/api";
+import { humanTime, randomItem } from "../lib/utils";
+import { useNowPlaying } from "../states/NowPlaying";
 
 export default function AudioControls() {
   const theme = useMantineTheme();
 
-  const { togglePlay, toggleLoop, toggleShuffle } = useNowPlaying(
+  const { togglePlay, toggleLoop, toggleShuffle, load } = useNowPlaying(
     useShallow((state) => ({
+      load: state.load,
       togglePlay: state.togglePlay,
       toggleLoop: state.toggleLoop,
       toggleShuffle: state.toggleShuffle,
@@ -29,6 +33,32 @@ export default function AudioControls() {
   const playing = useNowPlaying((state) => state.playing);
   const loop = useNowPlaying((state) => state.loop);
   const shuffle = useNowPlaying((state) => state.shuffle);
+  const currentSong = useNowPlaying((state) => state.song);
+
+  const { api } = useAppContext();
+
+  const songs = useQuery({
+    queryKey: ["songs", ["sort", "name"], ["order", "asc"], ["limit", 0]],
+
+    queryFn: async () => {
+      const songs = await api.songs({
+        sort: "name",
+        order: "asc",
+        limit: 0,
+      });
+
+      return songs.map(
+        (song) =>
+          new Song({
+            id: song.id,
+            name: song.name,
+            title: song.title,
+            artist: song.artist,
+            duration: song.duration,
+          })
+      );
+    },
+  });
 
   return (
     <Stack
@@ -45,7 +75,18 @@ export default function AudioControls() {
       <Group gap="md" mx="md" flex={1} w="100%" align="center" justify="center">
         <VolumeControl />
         <SpeedSelect />
-        <ActionIcon onClick={togglePlay} size="xl" radius="xl" style={{ flex: 0 }}>
+        <ActionIcon
+          onClick={() => {
+            if (currentSong) return togglePlay();
+
+            const song = randomItem(songs.data || []);
+            if (!song) return;
+
+            load(song, true);
+          }}
+          size="xl"
+          radius="xl"
+          style={{ flex: 0 }}>
           {playing ? <IconPlayerPause size="1.5rem" /> : <IconPlayerPlay size="1.5rem" />}
         </ActionIcon>
         <ActionIcon onClick={toggleShuffle} variant="subtle" size="lg">
@@ -138,7 +179,7 @@ function SpeedSelect() {
       </Popover.Target>
       <Popover.Dropdown>
         <Stack gap="md" align="center" w="100%">
-          <Slider onChange={setPlaybackRate} value={playbackRate} min={0.05} step={0.05} defaultValue={1} max={2} size="xl" radius="xl" w="100%" />
+          <Slider onChange={setPlaybackRate} value={playbackRate} min={0.1} step={0.05} defaultValue={1} max={2} size="xl" radius="xl" w="100%" />
 
           <Group justify="space-between" w="100%">
             <Button onClick={() => setPlaybackRate(0.1)} variant="subtle" size="xs" radius="xl" style={{ flex: 1 }} miw="3rem">

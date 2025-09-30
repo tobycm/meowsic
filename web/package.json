@@ -25,6 +25,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-player": "^3.0.0",
+    "seedrandom": "^3.0.5",
     "use-sound": "^5.0.0",
     "zustand": "^5.0.6"
   },
@@ -36,6 +37,7 @@
     "@types/howler": "^2.2.12",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/seedrandom": "^3.0.8",
     "@vitejs/plugin-react-swc": "^3.10.2",
     "elysia": "latest",
     "eslint": "^9.29.0",

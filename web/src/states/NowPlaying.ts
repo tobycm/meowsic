@@ -16,8 +16,6 @@ const initial = {
   shuffle: false,
   muted: false,
   volume: 0.5,
-
-  dominantColor: "",
 };
 
 type PlayerState = Omit<typeof initial, "song"> & {
@@ -38,7 +36,6 @@ type PlayerState = Omit<typeof initial, "song"> & {
   toggleMuted: () => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
-  setDominantColor: (color: string) => void;
 };
 
 export const useNowPlaying = create<PlayerState>()(
@@ -73,8 +70,6 @@ export const useNowPlaying = create<PlayerState>()(
 
       setCurrentTime: (time: number) => set({ currentTime: time }),
       setDuration: (duration: number) => set({ duration: duration }),
-
-      setDominantColor: (color: string) => set({ dominantColor: color }),
     }),
     {
       name: "now-playing-storage",
@@ -84,7 +79,6 @@ export const useNowPlaying = create<PlayerState>()(
         loop: state.loop,
         shuffle: state.shuffle,
         playbackRate: state.playbackRate,
-        dominantColor: state.dominantColor,
       }),
     }
   )
