@@ -17,7 +17,10 @@ import App from "./App.tsx";
 import AppProvider from "./contexts/AppContext.tsx";
 import { api } from "./lib/api";
 
+import { WindowHistoryAdapter } from "use-query-params/adapters/window";
+
 import { colorsTuple, createTheme, MantineProvider } from "@mantine/core";
+import { QueryParamProvider } from "use-query-params";
 import MediaSession from "./components/MediaSession.tsx";
 import Player from "./components/Player.tsx";
 import "./index.css";
@@ -61,15 +64,17 @@ function Root() {
 
   return (
     <MantineProvider theme={theme}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} />
+      <QueryParamProvider adapter={WindowHistoryAdapter}>
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false} />
 
-        <AppProvider api={api}>
-          <MediaSession />
-          <Player />
-          <App />
-        </AppProvider>
-      </QueryClientProvider>
+          <AppProvider api={api}>
+            <MediaSession />
+            <Player />
+            <App />
+          </AppProvider>
+        </QueryClientProvider>
+      </QueryParamProvider>
     </MantineProvider>
   );
 }

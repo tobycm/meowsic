@@ -3,6 +3,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useCallback, useEffect, useRef } from "react";
+import { NumberParam, useQueryParam } from "use-query-params";
 import { useShallow } from "zustand/shallow";
 import { useAppContext } from "../contexts/AppContext";
 import { Song } from "../lib/api";
@@ -13,6 +14,8 @@ export default function SongsList() {
   const { api } = useAppContext();
 
   const theme = useMantineTheme();
+
+  const [songIdQuery] = useQueryParam("song", NumberParam);
 
   const isMobile = useMediaQuery("(max-width: 56rem)");
 
@@ -60,7 +63,8 @@ export default function SongsList() {
     setSongs(songs.data || []);
 
     if (seed) shuffleSongs(songs.data || []);
-    if (songId) {
+    if (songIdQuery) load(songIdQuery);
+    else if (songId) {
       load(songId);
       if (currentTime) seek(currentTime);
     }

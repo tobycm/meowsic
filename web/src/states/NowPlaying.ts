@@ -15,7 +15,7 @@ const initial = {
   duration: 0,
   playbackRate: 1.0,
   seeking: false,
-  loop: "off",
+  loop: "off" as LoopMode,
   shuffle: false,
   muted: false,
   volume: 0.5,
@@ -124,7 +124,7 @@ export const useNowPlaying = create<PlayerState>()(
         if (!songs) {
           songs = get().songs;
         }
-        set({ shuffled: shuffleArray(songs) });
+        set({ shuffled: shuffleArray(songs, get().seed) });
       },
 
       setSeed: (seed?: string) => set({ seed }),

@@ -4,9 +4,10 @@ import { useShallow } from "zustand/shallow";
 import { useNowPlaying } from "../states/NowPlaying";
 
 export default function Player() {
-  const { pause, setCurrentTime, setDuration } = useNowPlaying(
+  const { pause, setCurrentTime, setDuration, next } = useNowPlaying(
     useShallow((state) => ({
       pause: state.pause,
+      next: state.next,
       setCurrentTime: state.setCurrentTime,
       setDuration: state.setDuration,
     }))
@@ -52,6 +53,11 @@ export default function Player() {
         setDuration(playerRef.current.duration);
       }}
       onEnded={() => {
+        if (loop === "all") {
+          next();
+          return;
+        }
+
         pause();
         setCurrentTime(duration);
       }}

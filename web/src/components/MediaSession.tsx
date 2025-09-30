@@ -3,11 +3,13 @@ import { useShallow } from "zustand/shallow";
 import { useNowPlaying } from "../states/NowPlaying";
 
 export default function MediaSession() {
-  const { pause, play, setCurrentTime } = useNowPlaying(
+  const { pause, play, previous, next, seek } = useNowPlaying(
     useShallow((state) => ({
       play: state.play,
       pause: state.pause,
-      setCurrentTime: state.setCurrentTime,
+      previous: state.previous,
+      next: state.next,
+      seek: state.seek,
     }))
   );
 
@@ -28,17 +30,14 @@ export default function MediaSession() {
       artist: song.artist || "Unknown Artist",
       album: "",
       artwork: [
-        { src: song.albumArt({ height: 60 }), sizes: "60x60", type: "image/png" },
-        { src: song.albumArt({ height: 80 }), sizes: "80x80", type: "image/png" },
         { src: song.albumArt({ height: 160 }), sizes: "160x160", type: "image/png" },
         { src: song.albumArt({ height: 240 }), sizes: "240x240", type: "image/png" },
         { src: song.albumArt({ height: 320 }), sizes: "320x320", type: "image/png" },
-        { src: song.albumArt({ height: 480 }), sizes: "480x480", type: "image/png" },
       ],
     });
 
     console.log("Updated Media Session metadata", navigator.mediaSession.metadata);
-  }, [song]);
+  }, [song, playing]);
 
   useEffect(() => {
     if (!("mediaSession" in navigator)) return;
@@ -55,14 +54,20 @@ export default function MediaSession() {
     navigator.mediaSession.setActionHandler("pause", () => {
       pause();
     });
+    navigator.mediaSession.setActionHandler("previoustrack", () => {
+      previous();
+    });
+    navigator.mediaSession.setActionHandler("nexttrack", () => {
+      next();
+    });
     navigator.mediaSession.setActionHandler("seekto", (details) => {
-      if (details.seekTime !== undefined) {
-        setCurrentTime(details.seekTime);
-      }
+      if (details.seekTime === undefined) return;
+
+      seek(details.seekTime);
     });
     navigator.mediaSession.setActionHandler("stop", () => {
       pause();
-      setCurrentTime(duration);
+      seek(duration);
     });
 
     return () => {
@@ -70,10 +75,12 @@ export default function MediaSession() {
 
       navigator.mediaSession.setActionHandler("play", null);
       navigator.mediaSession.setActionHandler("pause", null);
+      navigator.mediaSession.setActionHandler("previoustrack", null);
+      navigator.mediaSession.setActionHandler("nexttrack", null);
       navigator.mediaSession.setActionHandler("seekto", null);
       navigator.mediaSession.setActionHandler("stop", null);
     };
-  }, [play, pause, setCurrentTime, duration]);
+  }, [play, pause, seek, previous, next, duration]);
 
   return null;
 }
