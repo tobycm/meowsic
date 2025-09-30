@@ -3,7 +3,6 @@ import { persist } from "zustand/middleware";
 
 const initial = {
   dominantColor: "",
-  seed: "",
 };
 
 type AppState = typeof initial & {

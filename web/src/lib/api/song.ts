@@ -45,7 +45,7 @@ export class Song {
     return new URL(apiUrl + `/songs/${this.id}`).toString();
   }
 
-  albumArt(options?: AlbumArtOptions): string | undefined {
+  albumArt(options?: AlbumArtOptions): string {
     if (this.#albumArt) return this.#albumArt;
 
     const { width, height } = options || this.albumArtOptions || {};

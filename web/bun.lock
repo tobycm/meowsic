@@ -7,6 +7,7 @@
         "@elysiajs/eden": "^1.2.0",
         "@fontsource/roboto": "^5.2.6",
         "@fontsource/ubuntu": "^5.2.6",
+        "@kripod/uuidv7": "^0.3.4",
         "@mantine/core": "^8.1.2",
         "@mantine/hooks": "^8.1.2",
         "@tabler/icons-react": "^3.34.0",
@@ -231,6 +232,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
+
+    "@kripod/uuidv7": ["@kripod/uuidv7@0.3.4", "", {}, "sha512-i+CBqPsPehhAlDt2KYRR4+Yhj6LvnuBQQwNfNHwYkROjztaOmnDXPRvWl5zDy9ReVdRDhNeC4f2qRjjOLx1fsg=="],
 
     "@lokesh.dhakar/quantize": ["@lokesh.dhakar/quantize@1.4.0", "", {}, "sha512-+//cqVWKis//t0YH62EDtwaFSPG/CDtYNg4CZmzNmG2d5W17Iu3fuDAdpQXCDHUDrrU9q0veze4A7tPZXlR/mg=="],
 

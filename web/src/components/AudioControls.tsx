@@ -4,6 +4,8 @@ import {
   IconArrowsShuffle,
   IconPlayerPause,
   IconPlayerPlay,
+  IconPlayerSkipBack,
+  IconPlayerSkipForward,
   IconRepeat,
   IconRepeatOff,
   IconRepeatOnce,
@@ -11,22 +13,21 @@ import {
   IconVolume,
   IconVolumeOff,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import { useShallow } from "zustand/shallow";
-import { useAppContext } from "../contexts/AppContext";
-import { Song } from "../lib/api";
-import { humanTime, randomItem } from "../lib/utils";
+import { humanTime } from "../lib/utils";
 import { useNowPlaying } from "../states/NowPlaying";
 
 export default function AudioControls() {
   const theme = useMantineTheme();
 
-  const { togglePlay, toggleLoop, toggleShuffle, load } = useNowPlaying(
+  const { togglePlay, toggleLoop, toggleShuffle, loadRandom, previous, next } = useNowPlaying(
     useShallow((state) => ({
-      load: state.load,
       togglePlay: state.togglePlay,
       toggleLoop: state.toggleLoop,
       toggleShuffle: state.toggleShuffle,
+      loadRandom: state.loadRandom,
+      previous: state.previous,
+      next: state.next,
     }))
   );
 
@@ -34,31 +35,6 @@ export default function AudioControls() {
   const loop = useNowPlaying((state) => state.loop);
   const shuffle = useNowPlaying((state) => state.shuffle);
   const currentSong = useNowPlaying((state) => state.song);
-
-  const { api } = useAppContext();
-
-  const songs = useQuery({
-    queryKey: ["songs", ["sort", "name"], ["order", "asc"], ["limit", 0]],
-
-    queryFn: async () => {
-      const songs = await api.songs({
-        sort: "name",
-        order: "asc",
-        limit: 0,
-      });
-
-      return songs.map(
-        (song) =>
-          new Song({
-            id: song.id,
-            name: song.name,
-            title: song.title,
-            artist: song.artist,
-            duration: song.duration,
-          })
-      );
-    },
-  });
 
   return (
     <Stack
@@ -77,19 +53,37 @@ export default function AudioControls() {
         <SpeedSelect />
         <ActionIcon
           onClick={() => {
+            previous();
+          }}
+          variant="subtle"
+          size="lg">
+          <IconPlayerSkipBack size="1.2rem" />
+        </ActionIcon>
+        <ActionIcon
+          onClick={() => {
             if (currentSong) return togglePlay();
 
-            const song = randomItem(songs.data || []);
-            if (!song) return;
-
-            load(song, true);
+            loadRandom();
           }}
           size="xl"
           radius="xl"
           style={{ flex: 0 }}>
           {playing ? <IconPlayerPause size="1.5rem" /> : <IconPlayerPlay size="1.5rem" />}
         </ActionIcon>
-        <ActionIcon onClick={toggleShuffle} variant="subtle" size="lg">
+        <ActionIcon
+          onClick={() => {
+            next();
+          }}
+          variant="subtle"
+          size="lg">
+          <IconPlayerSkipForward size="1.2rem" />
+        </ActionIcon>
+        <ActionIcon
+          onClick={() => {
+            toggleShuffle(true);
+          }}
+          variant="subtle"
+          size="lg">
           {shuffle ? <IconArrowsShuffle size="1.2rem" /> : <IconArrowsRight size="1.2rem" />}
         </ActionIcon>
         <ActionIcon onClick={toggleLoop} variant="subtle" size="lg">

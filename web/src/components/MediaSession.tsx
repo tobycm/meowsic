@@ -23,19 +23,17 @@ export default function MediaSession() {
       return;
     }
 
-    const albumArt = song.albumArt() || "/default-album-art.png";
-
     navigator.mediaSession.metadata = new MediaMetadata({
       title: song.title || song.name,
       artist: song.artist || "Unknown Artist",
       album: "",
       artwork: [
-        { src: albumArt, sizes: "96x96", type: "image/png" },
-        { src: albumArt, sizes: "128x128", type: "image/png" },
-        { src: albumArt, sizes: "192x192", type: "image/png" },
-        { src: albumArt, sizes: "256x256", type: "image/png" },
-        { src: albumArt, sizes: "384x384", type: "image/png" },
-        { src: albumArt, sizes: "512x512", type: "image/png" },
+        { src: song.albumArt({ height: 60 }), sizes: "60x60", type: "image/png" },
+        { src: song.albumArt({ height: 80 }), sizes: "80x80", type: "image/png" },
+        { src: song.albumArt({ height: 160 }), sizes: "160x160", type: "image/png" },
+        { src: song.albumArt({ height: 240 }), sizes: "240x240", type: "image/png" },
+        { src: song.albumArt({ height: 320 }), sizes: "320x320", type: "image/png" },
+        { src: song.albumArt({ height: 480 }), sizes: "480x480", type: "image/png" },
       ],
     });
 

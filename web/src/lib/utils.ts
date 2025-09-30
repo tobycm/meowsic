@@ -1,3 +1,5 @@
+import seedrandom from "seedrandom";
+
 export function humanTime(date: Date): string {
   const hours = date.getUTCHours();
   const minutes = date.getUTCMinutes();
@@ -19,4 +21,15 @@ export function randomItem<T>(array: T[]): T | undefined {
   if (array.length === 0) return undefined;
   const index = Math.floor(Math.random() * array.length);
   return array[index];
+}
+
+export function shuffleArray<T>(array: T[], seed?: string): T[] {
+  const rng = seed ? seedrandom(seed) : Math.random;
+
+  const shuffled = array.slice();
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
 }

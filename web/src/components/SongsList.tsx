@@ -2,7 +2,7 @@ import { Box, Center, Loader, ScrollArea, Text, useMantineTheme } from "@mantine
 import { useMediaQuery } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useShallow } from "zustand/shallow";
 import { useAppContext } from "../contexts/AppContext";
 import { Song } from "../lib/api";
@@ -15,6 +15,21 @@ export default function SongsList() {
   const theme = useMantineTheme();
 
   const isMobile = useMediaQuery("(max-width: 56rem)");
+
+  const seed = useNowPlaying((state) => state.seed);
+  const songId = useNowPlaying((state) => state.songId);
+  const nowPlayingId = useNowPlaying((state) => state.song?.id);
+  const playing = useNowPlaying((state) => state.playing);
+  const currentTime = useNowPlaying((state) => state.currentTime);
+
+  const { setSongs, shuffleSongs, load, seek } = useNowPlaying(
+    useShallow((state) => ({
+      setSongs: state.setSongs,
+      shuffleSongs: state.shuffleSongs,
+      load: state.load,
+      seek: state.seek,
+    }))
+  );
 
   const songs = useQuery({
     queryKey: ["songs", ["sort", "name"], ["order", "asc"], ["limit", 0]],
@@ -39,10 +54,17 @@ export default function SongsList() {
     },
   });
 
-  const nowPlayingId = useNowPlaying((state) => state.song?.id);
-  const playing = useNowPlaying((state) => state.playing);
+  useEffect(() => {
+    if (!songs.isFetched) return;
 
-  const load = useNowPlaying(useShallow((state) => state.load));
+    setSongs(songs.data || []);
+
+    if (seed) shuffleSongs(songs.data || []);
+    if (songId) {
+      load(songId);
+      if (currentTime) seek(currentTime);
+    }
+  }, [setSongs, songs.data, songs.isFetched]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +77,7 @@ export default function SongsList() {
 
   const loadSong = useCallback(
     (song: Song, autoplay?: boolean) => {
-      load(song, autoplay);
+      load(song.id, autoplay);
     },
     [load]
   );
@@ -97,14 +119,6 @@ export default function SongsList() {
           })}
         </Box>
       )}
-
-      {/* <Stack gap="md" p="md">
-        {songs.isFetched &&
-          !!songs.data &&
-          songs.data.map((song) => (
-            <SongCard song={song} key={song.id} selected={nowPlayingId === song.id} playing={nowPlayingId === song.id ? playing : false} />
-          ))}
-      </Stack> */}
 
       {songs.isFetched && !!songs.data && (
         <Center mt="md">
