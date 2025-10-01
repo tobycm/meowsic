@@ -42,7 +42,7 @@ type PlayerState = Omit<typeof initial, "song"> & {
   setShuffle: (shuffle: boolean, doShuffle?: boolean) => void;
   toggleShuffle: (doShuffle?: boolean) => void;
   setMuted: (muted: boolean) => void;
-  toggleMuted: () => void;
+  toggleMute: () => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
 
@@ -57,6 +57,8 @@ type PlayerState = Omit<typeof initial, "song"> & {
   next: () => void;
 
   loadRandom: () => void;
+
+  clear: () => void;
 };
 
 export const useNowPlaying = create<PlayerState>()(
@@ -112,7 +114,7 @@ export const useNowPlaying = create<PlayerState>()(
       },
 
       setMuted: (muted: boolean) => set({ muted }),
-      toggleMuted: () => set((state) => ({ muted: !state.muted })),
+      toggleMute: () => set((state) => ({ muted: !state.muted })),
 
       setCurrentTime: (time: number) => set({ currentTime: time }),
       setDuration: (duration: number) => set({ duration: duration }),
@@ -169,6 +171,8 @@ export const useNowPlaying = create<PlayerState>()(
         const song = songs[Math.floor(Math.random() * songs.length)];
         load(song.id, true);
       },
+
+      clear: () => set({ song: undefined, songId: undefined, playing: false, currentTime: 0, duration: 0, seed: undefined }),
     }),
     {
       name: "now-playing-storage",

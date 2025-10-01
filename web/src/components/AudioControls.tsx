@@ -124,7 +124,7 @@ function VolumeControl() {
   const volume = useNowPlaying((state) => state.volume);
   const muted = useNowPlaying((state) => state.muted);
   const setVolume = useNowPlaying((state) => state.setVolume);
-  const toggleMuted = useNowPlaying((state) => state.toggleMuted);
+  const toggleMuted = useNowPlaying((state) => state.toggleMute);
 
   return (
     <Popover width={200} position="bottom" withArrow shadow="md">

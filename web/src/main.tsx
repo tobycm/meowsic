@@ -21,6 +21,7 @@ import { WindowHistoryAdapter } from "use-query-params/adapters/window";
 
 import { colorsTuple, createTheme, MantineProvider } from "@mantine/core";
 import { QueryParamProvider } from "use-query-params";
+import Hotkeys from "./components/Hotkeys.tsx";
 import MediaSession from "./components/MediaSession.tsx";
 import Player from "./components/Player.tsx";
 import "./index.css";
@@ -70,6 +71,7 @@ function Root() {
 
           <AppProvider api={api}>
             <MediaSession />
+            <Hotkeys />
             <Player />
             <App />
           </AppProvider>
